@@ -255,7 +255,8 @@ public class PieceMovement : MonoBehaviour
             
             Vector3Int ComputersmoveVector;
             Vector3Int ComputersIndexVector;
-            List<int>ComputersmoveList= ChessAI.OldGetComputerMoves(gameString, WhiteCanCastleKs, WhiteCanCastleQs, BlackCanCastleKs, BlackCanCastleQs, EnPassantSquares, WhiteToMove);
+            // List<int>ComputersmoveList= ChessAI.OldGetComputerMoves(gameString, WhiteCanCastleKs, WhiteCanCastleQs, BlackCanCastleKs, BlackCanCastleQs, EnPassantSquares, WhiteToMove);
+            List<int> ComputersmoveList = ChessAI.Main(gameString, WhiteCanCastleKs, WhiteCanCastleQs, BlackCanCastleKs, BlackCanCastleQs, EnPassantSquares, WhiteToMove);
 
             ComputerOldSquareIndex = ComputersmoveList[0];
             ComputersIndexVector = ChessAI.GetVectorFromIndex(ComputerOldSquareIndex);
@@ -276,7 +277,7 @@ public class PieceMovement : MonoBehaviour
         }
 
     }
-    public bool IsEnPassant(int OldsquareIndex,int squareIndex,string gameString,char piece)
+    public static bool IsEnPassant(int OldsquareIndex,int squareIndex,string gameString,char piece)
     {
         if(piece == 'p')
         {//black
@@ -371,172 +372,11 @@ public class PieceMovement : MonoBehaviour
            
             if (CurrentLegalMoves.Contains(squareIndex))
             {
-                
+                makemove(squareIndex);
 
-                if (squareIndex == 63 || OldsquareIndex == 63)
-                {
-                    WhiteCanCastleKs = false;
-                }
-                else if (squareIndex == 56 || OldsquareIndex == 56)
-                {
-                    WhiteCanCastleQs = false;
-                }
-                else if (squareIndex == 7 || OldsquareIndex == 7)
-                {
-                    BlackCanCastleKs = false;
-                }
-                else if (squareIndex == 0 || OldsquareIndex == 0)
-                {
-                    BlackCanCastleQs = false;
-                }
-                else if (OldsquareIndex == 4)
-                {
-                    BlackCanCastleKs = false;
-                    BlackCanCastleQs = false;
-                }
-                else if (OldsquareIndex == 60)
-                {
-                    WhiteCanCastleKs = false;
-                    WhiteCanCastleQs = false;
-                }
-
-                if (currentGameStringChar == 'p' && Mathf.CeilToInt((squareIndex) / 8 + 1) == 8 && CurrentLegalMoves.Contains(squareIndex))
-                {//promoting
-                    if (!IsYourTurn(WhiteToMove))
-                    {
-
-                        gameString = UpdateString(gameString, OldsquareIndex, '.');
-                        gameString = UpdateString(gameString, squareIndex, 'q');
-                        Debug.Log(currentGameStringChar);
-
-
-                    }
-                    else if (IsYourTurn(WhiteToMove))
-                    {
-                        PlayerPromoting = true;
-                        promotionIndex = squareIndex;
-                        BlackPromotePawn();
-                        gameString = UpdateString(gameString, OldsquareIndex, '.');
-                        
-                    }
-
-
-
-                }
-                else if (currentGameStringChar == 'P' && Mathf.CeilToInt((squareIndex) / 8 + 1) == 1 && CurrentLegalMoves.Contains(squareIndex))
-                {//promoting
-                    if (!IsYourTurn(WhiteToMove))
-                    {
-
-                        gameString = UpdateString(gameString, OldsquareIndex, '.');
-                        gameString = UpdateString(gameString, squareIndex, 'Q');
-                        Debug.Log(currentGameStringChar);
-
-                    }
-                    else if (IsYourTurn(WhiteToMove))
-                    {
-                        PlayerPromoting = true;
-
-                        promotionIndex = squareIndex;
-                        WhitePromotePawn();
-                        gameString = UpdateString(gameString, OldsquareIndex, '.');
-
-                        
-                    }
-
-
-
-                }
-                else if (currentGameStringChar == 'k' && squareIndex == OldsquareIndex - 3 || currentGameStringChar == 'k' && squareIndex == OldsquareIndex + 2)
-                {
-                    if (squareIndex == OldsquareIndex + 2)
-                    {//BlackKingsside
-                        gameString = UpdateString(gameString, 4, '.');
-                        gameString = UpdateString(gameString, 7, '.');
-                        gameString = UpdateString(gameString, 5, 'r');
-                        gameString = UpdateString(gameString, 6, 'k');
-                        BlackCanCastleKs = false;
-                        BlackCanCastleQs = false;
-
-                    }
-                    else if (squareIndex == OldsquareIndex - 3 )
-                    {//BlackQueensside
-                        gameString = UpdateString(gameString, 4, '.');
-                        gameString = UpdateString(gameString, 0, '.');
-                        gameString = UpdateString(gameString, 1, '.');
-                        gameString = UpdateString(gameString, 3, 'r');
-                        gameString = UpdateString(gameString, 2, 'k');
-                        BlackCanCastleKs = false;
-                        BlackCanCastleQs = false;
-                    }
-                }
-                else if (currentGameStringChar == 'K' && squareIndex == OldsquareIndex + 2 || currentGameStringChar == 'K' && squareIndex == OldsquareIndex - 3)
-                {
-                    if (squareIndex == OldsquareIndex + 2)
-                    {//WhiteKingsside
-                        gameString = UpdateString(gameString, 60, '.');
-                        gameString = UpdateString(gameString, 63, '.');
-                        gameString = UpdateString(gameString, 61, 'R');
-                        gameString = UpdateString(gameString, 62, 'K');
-                        WhiteCanCastleKs = false;
-                        WhiteCanCastleQs = false;
-
-                    }
-                    else if (squareIndex == OldsquareIndex - 3 )
-                    {//WhiteQueensside
-                        gameString = UpdateString(gameString, 56, '.');
-                        gameString = UpdateString(gameString, 60, '.');
-                        gameString = UpdateString(gameString, 57, '.');
-                        gameString = UpdateString(gameString, 59, 'R');
-                        gameString = UpdateString(gameString, 58, 'K');
-                        WhiteCanCastleKs = false;
-                        WhiteCanCastleQs = false;
-                    }
-                }
-                else if (IsEnPassant(OldsquareIndex, squareIndex, gameString, currentGameStringChar))
-                {
-                    gameString = UpdateString(gameString, OldsquareIndex, '.');
-                    gameString = UpdateString(gameString, squareIndex, currentGameStringChar);
-                    if (currentGameStringChar == 'p')
-                    {//black
-                        if (squareIndex - OldsquareIndex == 7)
-                        {
-                            gameString = UpdateString(gameString, OldsquareIndex - 1, '.');
-                        }
-                        else if (squareIndex - OldsquareIndex == 9)
-                        {
-                            gameString = UpdateString(gameString, OldsquareIndex + 1, '.');
-                        }
-
-                    }
-                    else if (currentGameStringChar == 'P')
-                    {//white
-                        if (OldsquareIndex - squareIndex == 7)
-                        {
-                            gameString = UpdateString(gameString, squareIndex + 8, '.');
-
-                        }
-                        else if (OldsquareIndex - squareIndex == 9)
-                        {
-                            gameString = UpdateString(gameString, squareIndex + 8, '.');
-
-                        }
-                    }
-
-
-                }
-
-                else
-                {//Normal Moves
-
-                    gameString = UpdateString(gameString, OldsquareIndex, '.');
-                    gameString = UpdateString(gameString, squareIndex, currentGameStringChar);
-                    EnPassantSquares = LegalMoves.IsEnPassantable(OldsquareIndex, squareIndex, currentGameStringChar);
-
-                    HaspickedPiece = false;
-                }
                 WhiteToMove = !WhiteToMove;
                 NumOfMoves += 1;
+                HaspickedPiece = false;
             }
             else
             {
@@ -549,7 +389,173 @@ public class PieceMovement : MonoBehaviour
 
 
 
+    public void makemove(int squareIndex)
+    {
 
+
+
+        if (squareIndex == 63 || OldsquareIndex == 63)
+        {
+            WhiteCanCastleKs = false;
+        }
+        else if (squareIndex == 56 || OldsquareIndex == 56)
+        {
+            WhiteCanCastleQs = false;
+        }
+        else if (squareIndex == 7 || OldsquareIndex == 7)
+        {
+            BlackCanCastleKs = false;
+        }
+        else if (squareIndex == 0 || OldsquareIndex == 0)
+        {
+            BlackCanCastleQs = false;
+        }
+        else if (OldsquareIndex == 4)
+        {
+            BlackCanCastleKs = false;
+            BlackCanCastleQs = false;
+        }
+        else if (OldsquareIndex == 60)
+        {
+            WhiteCanCastleKs = false;
+            WhiteCanCastleQs = false;
+        }
+
+        if (currentGameStringChar == 'p' && Mathf.CeilToInt((squareIndex) / 8 + 1) == 8 && CurrentLegalMoves.Contains(squareIndex))
+        {//promoting
+            if (!IsYourTurn(WhiteToMove))
+            {
+
+                gameString = UpdateString(gameString, OldsquareIndex, '.');
+                gameString = UpdateString(gameString, squareIndex, 'q');
+                Debug.Log(currentGameStringChar);
+
+
+            }
+            else if (IsYourTurn(WhiteToMove))
+            {
+                PlayerPromoting = true;
+                promotionIndex = squareIndex;
+                BlackPromotePawn();
+                gameString = UpdateString(gameString, OldsquareIndex, '.');
+
+            }
+
+
+
+        }
+        else if (currentGameStringChar == 'P' && Mathf.CeilToInt((squareIndex) / 8 + 1) == 1 && CurrentLegalMoves.Contains(squareIndex))
+        {//promoting
+            if (!IsYourTurn(WhiteToMove))
+            {
+
+                gameString = UpdateString(gameString, OldsquareIndex, '.');
+                gameString = UpdateString(gameString, squareIndex, 'Q');
+                Debug.Log(currentGameStringChar);
+
+            }
+            else if (IsYourTurn(WhiteToMove))
+            {
+                PlayerPromoting = true;
+
+                promotionIndex = squareIndex;
+                WhitePromotePawn();
+                gameString = UpdateString(gameString, OldsquareIndex, '.');
+
+
+            }
+
+
+
+        }
+        else if (currentGameStringChar == 'k' && squareIndex == OldsquareIndex - 3 || currentGameStringChar == 'k' && squareIndex == OldsquareIndex + 2)
+        {
+            if (squareIndex == OldsquareIndex + 2)
+            {//BlackKingsside
+                gameString = UpdateString(gameString, 4, '.');
+                gameString = UpdateString(gameString, 7, '.');
+                gameString = UpdateString(gameString, 5, 'r');
+                gameString = UpdateString(gameString, 6, 'k');
+                BlackCanCastleKs = false;
+                BlackCanCastleQs = false;
+
+            }
+            else if (squareIndex == OldsquareIndex - 3)
+            {//BlackQueensside
+                gameString = UpdateString(gameString, 4, '.');
+                gameString = UpdateString(gameString, 0, '.');
+                gameString = UpdateString(gameString, 1, '.');
+                gameString = UpdateString(gameString, 3, 'r');
+                gameString = UpdateString(gameString, 2, 'k');
+                BlackCanCastleKs = false;
+                BlackCanCastleQs = false;
+            }
+        }
+        else if (currentGameStringChar == 'K' && squareIndex == OldsquareIndex + 2 || currentGameStringChar == 'K' && squareIndex == OldsquareIndex - 3)
+        {
+            if (squareIndex == OldsquareIndex + 2)
+            {//WhiteKingsside
+                gameString = UpdateString(gameString, 60, '.');
+                gameString = UpdateString(gameString, 63, '.');
+                gameString = UpdateString(gameString, 61, 'R');
+                gameString = UpdateString(gameString, 62, 'K');
+                WhiteCanCastleKs = false;
+                WhiteCanCastleQs = false;
+
+            }
+            else if (squareIndex == OldsquareIndex - 3)
+            {//WhiteQueensside
+                gameString = UpdateString(gameString, 56, '.');
+                gameString = UpdateString(gameString, 60, '.');
+                gameString = UpdateString(gameString, 57, '.');
+                gameString = UpdateString(gameString, 59, 'R');
+                gameString = UpdateString(gameString, 58, 'K');
+                WhiteCanCastleKs = false;
+                WhiteCanCastleQs = false;
+            }
+        }
+        else if (IsEnPassant(OldsquareIndex, squareIndex, gameString, currentGameStringChar))
+        {
+            gameString = UpdateString(gameString, OldsquareIndex, '.');
+            gameString = UpdateString(gameString, squareIndex, currentGameStringChar);
+            if (currentGameStringChar == 'p')
+            {//black
+                if (squareIndex - OldsquareIndex == 7)
+                {
+                    gameString = UpdateString(gameString, OldsquareIndex - 1, '.');
+                }
+                else if (squareIndex - OldsquareIndex == 9)
+                {
+                    gameString = UpdateString(gameString, OldsquareIndex + 1, '.');
+                }
+
+            }
+            else if (currentGameStringChar == 'P')
+            {//white
+                if (OldsquareIndex - squareIndex == 7)
+                {
+                    gameString = UpdateString(gameString, squareIndex + 8, '.');
+
+                }
+                else if (OldsquareIndex - squareIndex == 9)
+                {
+                    gameString = UpdateString(gameString, squareIndex + 8, '.');
+
+                }
+            }
+
+
+        }
+        else
+        {//Normal Moves
+
+            gameString = UpdateString(gameString, OldsquareIndex, '.');
+            gameString = UpdateString(gameString, squareIndex, currentGameStringChar);
+            EnPassantSquares = LegalMoves.IsEnPassantable(OldsquareIndex, squareIndex, currentGameStringChar);
+
+           
+        }
+    }
 
 
 
